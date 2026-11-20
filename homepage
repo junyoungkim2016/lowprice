@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오늘의 초저가 먹거리 최저가 조회</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: #f5f6f8; color: #111; }
+    header { background: #fff; border-bottom: 1px solid #e5e8eb; position: sticky; top: 0; z-index: 100; }
+    .nav { max-width: 1100px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+    .logo { font-size: 22px; font-weight: 800; color: #e52528; letter-spacing: -0.5px; }
+    .logo span { color: #0074e9; }
+    .search-box { flex: 1; min-width: 240px; max-width: 420px; display: flex; }
+    .search-box input { width: 100%; padding: 10px 14px; border: 2px solid #0074e9; border-radius: 8px; font-size: 14px; outline: none; }
+    .admin-btn { background: #1f2937; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .admin-btn:hover { background: #374151; }
+
+    .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tab { padding: 8px 16px; border-radius: 20px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .tab.active { background: #0074e9; color: #fff; border-color: #0074e9; }
+    .sort-select { padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; }
+
+    .admin-panel { display: none; background: #fff; border: 2px solid #0074e9; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .admin-panel.open { display: block; }
+    .admin-panel h3 { font-size: 16px; margin-bottom: 12px; color: #0074e9; }
+    .add-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 18px; }
+    .add-box h4 { font-size: 14px; margin-bottom: 10px; color: #1e293b; }
+    .add-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .add-grid input, .add-grid select { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; width: 100%; }
+    .add-btn { background: #10b981; color: #fff; border: none; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .add-btn:hover { background: #059669; }
+
+    .admin-row { display: grid; grid-template-columns: 180px 1fr 64px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .admin-row label { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-row input { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; width: 100%; }
+    .del-btn { background: #ef4444; color: #fff; border: none; padding: 8px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .del-btn:hover { background: #dc2626; }
+    .admin-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .save-btn { background: #0074e9; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .reset-btn { background: #6b7280; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 18px; }
+    .card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #e5e8eb; display: flex; flex-direction: column; transition: transform 0.15s, box-shadow 0.15s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+    .thumb { height: 150px; background: #f0f4f8; display: flex; align-items: center; justify-content: center; font-size: 56px; position: relative; overflow: hidden; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 10px; left: 10px; background: #e52528; color: #fff; font-size: 12px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    .rocket { position: absolute; bottom: 10px; right: 10px; background: #0074e9; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 4px; }
+    .info { padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .cat { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .title { font-size: 15px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; color: #111; }
+    .price-box { margin-bottom: 14px; }
+    .orig-price { font-size: 13px; color: #9ca3af; text-decoration: line-through; }
+    .sale-price { font-size: 20px; font-weight: 800; color: #e52528; }
+    .buy-btn { display: block; width: 100%; text-align: center; background: #0074e9; color: #fff; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; transition: background 0.15s; }
+    .buy-btn:hover { background: #005bb5; }
+
+    footer { max-width: 1100px; margin: 40px auto; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e8eb; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="logo">초저가<span>먹방딜</span></div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="음식, 간식, 음료, 디저트 검색..." oninput="render()" />
+      </div>
+      <button class="admin-btn" onclick="toggleAdmin()">상품 · 링크 관리</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="admin-panel" id="adminPanel">
+      <h3>상품 추가 · 삭제 및 쿠팡 링크 관리</h3>
+
+      <div class="add-box">
+        <h4>+ 새 상품 등록하기</h4>
+        <div class="add-grid">
+          <select id="newCat">
+            <option value="음식">음식</option>
+            <option value="간식">간식</option>
+            <option value="음료">음료</option>
+            <option value="디저트">디저트</option>
+            <option value="배달·밀키트">배달·밀키트</option>
+          </select>
+          <input type="text" id="newEmoji" placeholder="이모지 또는 이미지 URL (예: 🍕)" />
+          <input type="text" id="newName" placeholder="상품명 (예: 불닭볶음면 20봉)" />
+          <input type="number" id="newOrig" placeholder="정상가 숫자 (예: 22000)" />
+          <input type="number" id="newPrice" placeholder="할인가 숫자 (예: 14900)" />
+          <input type="text" id="newUrl" placeholder="쿠팡 링크 (https://coupang.com...)" />
+        </div>
+        <button class="add-btn" onclick="addProduct()">새 상품 추가</button>
+      </div>
+
+      <div id="adminList"></div>
+
+      <div class="admin-actions">
+        <button class="save-btn" onclick="saveLinks()">변경사항 저장 및 닫기</button>
+        <button class="reset-btn" onclick="resetProducts()">기본 상품으로 초기화</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="tabs" id="categoryTabs">
+        <button class="tab active" data-cat="전체" onclick="setCat('전체', this)">전체</button>
+        <button class="tab" data-cat="음식" onclick="setCat('음식', this)">음식</button>
+        <button class="tab" data-cat="간식" onclick="setCat('간식', this)">간식</button>
+        <button class="tab" data-cat="음료" onclick="setCat('음료', this)">음료</button>
+        <button class="tab" data-cat="디저트" onclick="setCat('디저트', this)">디저트</button>
+        <button class="tab" data-cat="배달·밀키트" onclick="setCat('배달·밀키트', this)">배달·밀키트</button>
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="render()">
+        <option value="discount">할인율 높은순</option>
+        <option value="low">최저가순</option>
+      </select>
+    </div>
+
+    <div class="grid" id="productGrid"></div>
+  </div>
+
+  <footer>
+    이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br />
+    표시된 가격은 변동될 수 있으며, 구매 버튼 클릭 시 쿠팡 상품 페이지로 즉시 이동합니다.
+  </footer>
+
+  <script>
+    const defaultProducts = [
+      { id: 1, category: "음식", emoji: "🍜", name: "신라면 20봉 멀티팩 특가", orig: 19800, price: 12900, url: "https://coupang.com" },
+      { id: 2, category: "음료", emoji: "🥤", name: "코카콜라 제로 355ml 24캔", orig: 26900, price: 16400, url: "https://coupang.com" },
+      { id: 3, category: "간식", emoji: "🍪", name: "오리온 초코파이 정 36개입 대용량", orig: 15000, price: 9400, url: "https://coupang.com" },
+      { id: 4, category: "디저트", emoji: "🍰", name: "필라델피아 치즈케이크 큐브 794g", orig: 21900, price: 14500, url: "https://coupang.com" },
+      { id: 5, category: "배달·밀키트", emoji: "🍗", name: "순살 크리스피 치킨 1kg 에어프라이어용", orig: 16900, price: 9900, url: "https://coupang.com" },
+      { id: 6, category: "음식", emoji: "🍚", name: "햇반 210g 24개입 실속박스", orig: 31000, price: 21400, url: "https://coupang.com" },
+      { id: 7, category: "음료", emoji: "☕", name: "카누 미니 다크 로스트 100T", orig: 23500, price: 15800, url: "https://coupang.com" },
+      { id: 8, category: "간식", emoji: "🍟", name: "프링글스 오리지널 110g 6개 묶음", orig: 18000, price: 10900, url: "https://coupang.com" }
+    ];
+
+    let products = JSON.parse(localStorage.getItem("coupang_deal_products")) || JSON.parse(JSON.stringify(defaultProducts));
+    let currentCat = "전체";
+
+    function syncStorage() {
+      localStorage.setItem("coupang_deal_products", JSON.stringify(products));
+    }
+
