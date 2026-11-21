@@ -3,193 +3,170 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7f8fc" />
-  <title>초저가 먹방딜 | 먹거리 묻고 답하기</title>
+  <title>오늘의 초저가 먹거리 최저가 조회</title>
   <style>
-    :root { color-scheme: light; --blue:#2563eb; --blue-dark:#1d4ed8; --ink:#172033; --muted:#697386; --line:#e7eaf0; --surface:#fff; --bg:#f7f8fc; --red:#e5484d; }
-    * { box-sizing:border-box; }
-    body { margin:0; background:var(--bg); color:var(--ink); font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    button,input,textarea,select { font:inherit; }
-    button { cursor:pointer; }
-    .topbar { position:sticky; top:0; z-index:5; background:rgba(255,255,255,.94); border-bottom:1px solid var(--line); backdrop-filter:blur(12px); }
-    .nav { max-width:1100px; margin:auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:18px; }
-    .brand { color:var(--red); text-decoration:none; font-size:21px; font-weight:900; letter-spacing:-.7px; white-space:nowrap; }
-    .brand span { color:var(--blue); }
-    .nav-links { display:flex; gap:8px; }
-    .nav-links a { color:#4b5565; text-decoration:none; font-size:14px; font-weight:700; padding:9px 12px; border-radius:9px; }
-    .nav-links a:hover { color:var(--blue); background:#eff5ff; }
-    main { max-width:1100px; margin:28px auto 60px; padding:0 20px; }
-    .hero { border-radius:22px; padding:36px; background:linear-gradient(120deg,#eaf2ff,#f8faff 55%,#fff0ec); display:flex; align-items:center; justify-content:space-between; gap:24px; }
-    .eyebrow { color:var(--blue); font-size:13px; font-weight:800; letter-spacing:.02em; }
-    h1 { margin:10px 0; font-size:clamp(28px,5vw,42px); letter-spacing:-1.6px; line-height:1.2; }
-    .hero p { color:#596579; line-height:1.65; margin:0; }
-    .hero-icon { font-size:72px; }
-    .section { margin-top:34px; scroll-margin-top:90px; }
-    .section-head { display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:16px; }
-    h2 { font-size:23px; letter-spacing:-.6px; margin:0; }
-    .sub { margin:6px 0 0; color:var(--muted); font-size:14px; }
-    .question-layout { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(260px,.8fr); gap:18px; align-items:start; }
-    .panel { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:20px; }
-    .question-tools { display:flex; gap:9px; margin-bottom:14px; }
-    .field { width:100%; border:1px solid #d8deea; background:#fff; border-radius:10px; padding:11px 12px; color:var(--ink); outline:none; }
-    .field:focus { border-color:var(--blue); box-shadow:0 0 0 3px #2563eb1a; }
-    .question-tools select { width:auto; min-width:118px; }
-    .question-list { display:grid; gap:11px; }
-    .question-card { border:1px solid var(--line); border-radius:13px; padding:16px; background:#fff; }
-    .q-meta { display:flex; justify-content:space-between; align-items:center; gap:10px; color:var(--muted); font-size:12px; }
-    .tag { color:var(--blue); background:#eff5ff; border-radius:20px; padding:5px 9px; font-weight:800; white-space:nowrap; }
-    .q-title { margin:12px 0 8px; font-size:17px; line-height:1.5; letter-spacing:-.3px; }
-    .q-body { margin:0; color:#596579; font-size:14px; line-height:1.65; white-space:pre-wrap; overflow-wrap:anywhere; }
-    .q-actions { display:flex; align-items:center; gap:9px; margin-top:14px; }
-    .small-btn { border:1px solid var(--line); color:#465166; background:#fff; border-radius:8px; padding:7px 10px; font-size:13px; font-weight:700; }
-    .small-btn:hover { border-color:#b8cafa; color:var(--blue); }
-    .answer-list { display:grid; gap:8px; margin:14px 0 0; }
-    .answer { background:#f7f9fc; border-radius:10px; padding:11px 12px; font-size:14px; line-height:1.6; overflow-wrap:anywhere; }
-    .answer strong { font-size:12px; color:var(--blue); margin-right:7px; }
-    .answer-form { display:flex; gap:8px; margin-top:10px; }
-    .answer-form .field { min-width:0; }
-    .primary-btn { border:0; background:var(--blue); color:white; border-radius:10px; padding:11px 15px; font-weight:800; white-space:nowrap; }
-    .primary-btn:hover { background:var(--blue-dark); }
-    .ask-panel h3 { margin:0 0 6px; font-size:18px; }
-    .ask-panel > p { margin:0 0 16px; color:var(--muted); font-size:13px; line-height:1.55; }
-    .ask-form { display:grid; gap:10px; }
-    textarea.field { min-height:108px; resize:vertical; line-height:1.55; }
-    .notice { margin-top:13px; padding:11px 12px; background:#fff8e6; border-radius:10px; color:#765617; font-size:12px; line-height:1.55; }
-    .empty { color:var(--muted); text-align:center; padding:28px 12px; border:1px dashed #d6dce7; border-radius:12px; font-size:14px; }
-    .deals { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
-    .deal { padding:17px; background:#fff; border:1px solid var(--line); border-radius:14px; }
-    .deal-emoji { font-size:34px; }
-    .deal h3 { font-size:15px; line-height:1.5; min-height:45px; margin:10px 0; }
-    .deal .old { color:#929aaa; font-size:13px; text-decoration:line-through; }
-    .deal .price { color:var(--red); font-size:20px; font-weight:900; margin:3px 0 12px; }
-    .deal a { display:block; text-align:center; text-decoration:none; background:#eff5ff; color:var(--blue); font-weight:800; font-size:13px; padding:10px; border-radius:9px; }
-    footer { border-top:1px solid var(--line); color:var(--muted); font-size:12px; line-height:1.7; text-align:center; padding:22px 18px; }
-    @media(max-width:760px) { .question-layout { grid-template-columns:1fr; } .hero { padding:26px 22px; } .hero-icon { font-size:54px; } }
-    @media(max-width:520px) { .nav { padding:12px 15px; } .nav-links a { padding:8px; font-size:13px; } main { padding:0 14px; margin-top:18px; } .hero-icon { display:none; } .question-tools { flex-direction:column; } .question-tools select { width:100%; } .answer-form { flex-direction:column; } .answer-form .primary-btn { width:100%; } .panel { padding:15px; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: #f5f6f8; color: #111; }
+    header { background: #fff; border-bottom: 1px solid #e5e8eb; position: sticky; top: 0; z-index: 100; }
+    .nav { max-width: 1100px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+    .logo { font-size: 22px; font-weight: 800; color: #e52528; letter-spacing: -0.5px; }
+    .logo span { color: #0074e9; }
+    .search-box { flex: 1; min-width: 240px; max-width: 520px; display: flex; }
+    .search-box input { width: 100%; padding: 10px 14px; border: 2px solid #0074e9; border-right: 0; border-radius: 8px 0 0 8px; font-size: 14px; outline: none; }
+    .search-btn { border: 0; background: #0074e9; color: #fff; padding: 10px 16px; border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 700; }
+    .admin-btn { background: #1f2937; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tab { padding: 8px 16px; border-radius: 20px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .tab.active { background: #0074e9; color: #fff; border-color: #0074e9; }
+    .sort-select { padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; }
+
+    .admin-panel { display: none; background: #fff; border: 2px solid #0074e9; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .admin-panel.open { display: block; }
+    .admin-panel h3 { font-size: 16px; margin-bottom: 12px; color: #0074e9; }
+    .add-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 18px; }
+    .add-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .add-grid input, .add-grid select { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; width: 100%; }
+    .add-btn, .save-btn { background: #0074e9; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .reset-btn, .del-btn { background: #6b7280; color: #fff; border: none; padding: 8px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .del-btn { background: #ef4444; }
+    .admin-row { display: grid; grid-template-columns: 180px 1fr 64px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .admin-row label { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-row input { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; width: 100%; }
+    .admin-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 18px; }
+    .card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #e5e8eb; display: flex; flex-direction: column; transition: transform 0.15s, box-shadow 0.15s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+    .thumb { height: 150px; background: #f0f4f8; display: flex; align-items: center; justify-content: center; font-size: 56px; position: relative; overflow: hidden; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 10px; left: 10px; background: #e52528; color: #fff; font-size: 12px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    .rocket { position: absolute; bottom: 10px; right: 10px; background: #0074e9; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 4px; }
+    .info { padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .cat { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .title { font-size: 15px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; color: #111; }
+    .price-box { margin-bottom: 14px; }
+    .orig-price { font-size: 13px; color: #9ca3af; text-decoration: line-through; }
+    .sale-price { font-size: 20px; font-weight: 800; color: #e52528; }
+    .buy-btn { display: block; width: 100%; text-align: center; background: #0074e9; color: #fff; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; }
+
+    footer { max-width: 1100px; margin: 40px auto; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e8eb; }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <nav class="nav" aria-label="주 메뉴">
-      <a class="brand" href="#home">초저가<span>먹방딜</span></a>
-      <div class="nav-links"><a href="#questions">먹거리 Q&A</a><a href="#deals">오늘의 특가</a></div>
-    </nav>
-  </header>
-  <main id="home">
-    <section class="hero">
-      <div><div class="eyebrow">맛있는 정보, 함께 나눠요</div><h1>먹거리 궁금증,<br />서로 묻고 답해요</h1><p>상품 추천부터 보관법, 가성비 비교까지<br />궁금한 점을 질문하고 경험을 나눠보세요.</p></div>
-      <div class="hero-icon" aria-hidden="true">💬</div>
-    </section>
-
-    <section class="section" id="questions">
-      <div class="section-head"><div><h2>먹거리 질문과 답변</h2><p class="sub">궁금한 질문을 올리고 경험과 팁을 나눠보세요.</p></div></div>
-      <div class="question-layout">
-        <section class="panel" aria-label="질문 목록">
-          <div class="question-tools">
-            <input id="questionSearch" class="field" type="search" placeholder="질문 검색하기" aria-label="질문 검색" />
-            <select id="questionFilter" class="field" aria-label="질문 분류"><option value="전체">전체 질문</option><option>상품 추천</option><option>가성비</option><option>요리·보관</option><option>기타</option></select>
-          </div>
-          <div id="questionList" class="question-list" aria-live="polite"></div>
-        </section>
-        <aside class="panel ask-panel">
-          <h3>질문 작성하기</h3><p>구체적으로 적어주시면 더 좋은 답변을 받을 수 있어요.</p>
-          <form id="askForm" class="ask-form">
-            <input id="askName" class="field" maxlength="24" placeholder="닉네임 (선택)" aria-label="닉네임" />
-            <select id="askCategory" class="field" aria-label="질문 분류"><option>상품 추천</option><option>가성비</option><option>요리·보관</option><option>기타</option></select>
-            <input id="askTitle" class="field" maxlength="100" placeholder="질문 제목" required aria-label="질문 제목" />
-            <textarea id="askBody" class="field" maxlength="1000" placeholder="궁금한 내용을 적어주세요." required aria-label="질문 내용"></textarea>
-            <button class="primary-btn" type="submit">질문 등록</button>
-          </form>
-          <div class="notice">현재 질문과 답변은 이 브라우저에 저장됩니다. 다른 사람과 내용을 공유하려면 데이터베이스/서버 연결이 필요합니다.</div>
-        </aside>
+  <header>
+    <form class="nav" id="coupangSearchForm">
+      <div class="logo">초저가<span>먹방딜</span></div>
+      <div class="search-box">
+        <input type="search" id="coupangSearchInput" placeholder="쿠팡에서 먹거리 검색..." aria-label="쿠팡에서 먹거리 검색" />
+        <button class="search-btn" type="submit">검색</button>
       </div>
-    </section>
+      <button type="button" class="admin-btn" onclick="toggleAdmin()">상품 · 링크 관리</button>
+    </form>
+  </header>
 
-    <section class="section" id="deals">
-      <div class="section-head"><div><h2>오늘의 먹거리 특가</h2><p class="sub">아래 상품은 쿠팡 검색 결과로 이동합니다.</p></div></div>
-      <div id="dealList" class="deals"></div>
-    </section>
-  </main>
+  <div class="container">
+    <div class="admin-panel" id="adminPanel">
+      <h3>상품 추가 · 삭제 및 쿠팡 링크 관리</h3>
+      <div class="add-box">
+        <div class="add-grid">
+          <select id="newCat"><option value="음식">음식</option><option value="간식">간식</option><option value="음료">음료</option><option value="디저트">디저트</option><option value="배달·밀키트">배달·밀키트</option></select>
+          <input type="text" id="newEmoji" placeholder="이모지 또는 이미지 URL" />
+          <input type="text" id="newName" placeholder="상품명" />
+          <input type="number" id="newOrig" placeholder="정상가" />
+          <input type="number" id="newPrice" placeholder="할인가" />
+          <input type="text" id="newUrl" placeholder="쿠팡 상세 또는 검색 링크" />
+        </div>
+        <button class="add-btn" onclick="addProduct()">새 상품 추가</button>
+      </div>
+      <div id="adminList"></div>
+      <div class="admin-actions"><button class="save-btn" onclick="saveLinks()">변경사항 저장 및 닫기</button><button class="reset-btn" onclick="resetProducts()">기본 상품으로 초기화</button></div>
+    </div>
+
+    <div class="filters">
+      <div class="tabs" id="categoryTabs">
+        <button class="tab active" data-cat="전체" onclick="setCat('전체', this)">전체</button><button class="tab" data-cat="음식" onclick="setCat('음식', this)">음식</button><button class="tab" data-cat="간식" onclick="setCat('간식', this)">간식</button><button class="tab" data-cat="음료" onclick="setCat('음료', this)">음료</button><button class="tab" data-cat="디저트" onclick="setCat('디저트', this)">디저트</button><button class="tab" data-cat="배달·밀키트" onclick="setCat('배달·밀키트', this)">배달·밀키트</button>
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="render()"><option value="discount">할인율 높은순</option><option value="low">최저가순</option></select>
+    </div>
+
+    <div class="grid" id="productGrid"></div>
+  </div>
+
   <footer>이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br />표시된 가격은 변동될 수 있습니다.</footer>
+
   <script>
-    const STORAGE_KEY = 'lowprice_qa_v1';
-    const starterQuestions = [
-      { id:'sample-1', category:'상품 추천', title:'간편하게 먹을 수 있는 가성비 단백질 간식 추천해주세요', body:'출근할 때 들고 다니기 좋고 너무 달지 않은 제품을 찾고 있어요.', name:'먹거리초보', createdAt:Date.now()-3600000, votes:3, answers:[{name:'오늘도한끼',body:'그릭요거트나 구운 계란이 간편해요.'}] },
-      { id:'sample-2', category:'요리·보관', title:'대용량 냉동만두 맛있게 보관하는 방법이 있나요?', body:'봉지를 열고 나면 냉동실에서 서로 붙는 경우가 많더라고요.', name:'만두러버', createdAt:Date.now()-7200000, votes:1, answers:[] }
+    const defaultProducts = [
+      { id: 1, category: "음식", emoji: "🍜", name: "신라면 20봉 멀티팩 특가", orig: 19800, price: 12900, url: "" },
+      { id: 2, category: "음료", emoji: "🥤", name: "코카콜라 제로 355ml 24캔", orig: 26900, price: 16400, url: "" },
+      { id: 3, category: "간식", emoji: "🍪", name: "오리온 초코파이 정 36개입 대용량", orig: 15000, price: 9400, url: "" },
+      { id: 4, category: "디저트", emoji: "🍰", name: "필라델피아 치즈케이크 큐브 794g", orig: 21900, price: 14500, url: "" },
+      { id: 5, category: "배달·밀키트", emoji: "🍗", name: "순살 크리스피 치킨 1kg 에어프라이어용", orig: 16900, price: 9900, url: "" },
+      { id: 6, category: "음식", emoji: "🍚", name: "햇반 210g 24개입 실속박스", orig: 31000, price: 21400, url: "" },
+      { id: 7, category: "음료", emoji: "☕", name: "카누 미니 다크 로스트 100T", orig: 23500, price: 15800, url: "" },
+      { id: 8, category: "간식", emoji: "🍟", name: "프링글스 오리지널 110g 6개 묶음", orig: 18000, price: 10900, url: "" }
     ];
-    const deals = [
-      { emoji:'🍜', name:'신라면 멀티팩 특가', old:19800, price:12900, search:'신라면 멀티팩' },
-      { emoji:'🥤', name:'코카콜라 제로 355ml 묶음', old:26900, price:16400, search:'코카콜라 제로 355ml 24캔' },
-      { emoji:'🍪', name:'초코파이 대용량 간식', old:15000, price:9400, search:'오리온 초코파이 정 대용량' },
-      { emoji:'🍚', name:'즉석밥 실속 박스', old:31000, price:21400, search:'햇반 210g 24개입' }
-    ];
-    let questions = loadQuestions();
-    const won = value => `${Number(value).toLocaleString('ko-KR')}원`;
-    function coupangSearchUrl(query) { return `https://www.coupang.com/np/search?q=${encodeURIComponent(query)}&channel=recent`; }
-    function loadQuestions() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed)) return parsed; }
-      } catch (error) { console.warn('저장된 질문을 불러오지 못했습니다.', error); }
-      return JSON.parse(JSON.stringify(starterQuestions));
+
+    let products = JSON.parse(localStorage.getItem("coupang_deal_products")) || JSON.parse(JSON.stringify(defaultProducts));
+    let currentCat = "전체";
+
+    function syncStorage() { localStorage.setItem("coupang_deal_products", JSON.stringify(products)); }
+    function couponSearchUrl(query) { return "https://www.coupang.com/np/search?q=" + encodeURIComponent(query) + "&channel=recent"; }
+
+    function openCoupang(query, url) {
+      const target = url && /^https?:\/\//i.test(url) ? url : couponSearchUrl(query);
+      window.open(target, '_blank', 'noopener,noreferrer');
     }
-    function saveQuestions() {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(questions)); }
-      catch (error) { alert('브라우저 저장 공간에 저장하지 못했습니다.'); }
-    }
-    function safeText(value) {
-      return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-    }
-    function renderQuestions() {
-      const query = document.getElementById('questionSearch').value.trim().toLocaleLowerCase('ko');
-      const filter = document.getElementById('questionFilter').value;
-      const visible = questions.filter(q => (filter === '전체' || q.category === filter) && `${q.title} ${q.body} ${q.name}`.toLocaleLowerCase('ko').includes(query));
-      const list = document.getElementById('questionList');
-      if (!visible.length) { list.innerHTML = '<div class="empty">질문이 없습니다. 첫 질문을 남겨보세요!</div>'; return; }
-      list.innerHTML = visible.map(q => `
-        <article class="question-card" data-id="${safeText(q.id)}">
-          <div class="q-meta"><span class="tag">${safeText(q.category)}</span><span>${safeText(q.name || '익명')} · ${new Date(q.createdAt).toLocaleDateString('ko-KR')}</span></div>
-          <h3 class="q-title">${safeText(q.title)}</h3><p class="q-body">${safeText(q.body)}</p>
-          <div class="q-actions"><button class="small-btn vote-btn" type="button" data-id="${safeText(q.id)}" aria-label="도움돼요">👍 도움돼요 ${Number(q.votes)||0}</button><span class="sub">답변 ${q.answers.length}개</span></div>
-          <div class="answer-list">${q.answers.map(a => `<div class="answer"><strong>${safeText(a.name || '익명')}</strong>${safeText(a.body)}</div>`).join('')}</div>
-          <form class="answer-form" data-id="${safeText(q.id)}"><input class="field answer-input" maxlength="500" required placeholder="답변을 남겨주세요" aria-label="답변 내용" /><button class="primary-btn" type="submit">답변 등록</button></form>
-        </article>`).join('');
-    }
-    function renderDeals() {
-      document.getElementById('dealList').innerHTML = deals.map(item => {
-        const url = coupangSearchUrl(item.search);
-        return `<article class="deal"><div class="deal-emoji" aria-hidden="true">${item.emoji}</div><h3>${safeText(item.name)}</h3><div class="old">${won(item.old)}</div><div class="price">${won(item.price)}</div><a href="${url}" target="_blank" rel="noopener noreferrer">쿠팡 검색하기 ↗</a></article>`;
-      }).join('');
-    }
-    document.getElementById('askForm').addEventListener('submit', event => {
+
+    document.getElementById("coupangSearchForm").addEventListener("submit", function(event) {
       event.preventEvent();
     });
-    document.getElementById('askForm').addEventListener('submit', event => {
+
+    document.getElementById("coupangSearchForm").addEventListener("submit", function(event) {
       event.preventDefault();
-      const title = document.getElementById('askTitle').value.trim();
-      const body = document.getElementById('askBody').value.trim();
-      if (!title || !body) return;
-      questions.unshift({ id:`q-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, category:document.getElementById('askCategory').value, title, body, name:document.getElementById('askName').value.trim() || '익명', createdAt:Date.now(), votes:0, answers:[] });
-      saveQuestions(); event.currentTarget.reset(); renderQuestions();
+      const input = document.getElementById("coupangSearchInput");
+      const query = input.value.trim();
+      if (!query) { input.focus(); return; }
+      openCoupang(query, "");
     });
-    document.getElementById('questionList').addEventListener('submit', event => {
-      if (!event.target.matches('.answer-form')) return;
-      event.preventDefault();
-      const q = questions.find(item => item.id === event.target.dataset.id);
-      const input = event.target.querySelector('.answer-input');
-      const body = input.value.trim();
-      if (!q || !body) return;
-      q.answers.push({ name:'익명', body }); saveQuestions(); renderQuestions();
-    });
-    document.getElementById('questionList').addEventListener('click', event => {
-      const button = event.target.closest('.vote-btn');
-      if (!button) return;
-      const q = questions.find(item => item.id === button.dataset.id);
-      if (q) { q.votes = (Number(q.votes)||0) + 1; saveQuestions(); renderQuestions(); }
-    });
-    document.getElementById('questionSearch').addEventListener('input', renderQuestions);
-    document.getElementById('questionFilter').addEventListener('change', renderQuestions);
-    renderQuestions(); renderDeals();
+
+    function toggleAdmin() { document.getElementById("adminPanel").classList.toggle("open"); renderAdmin(); }
+    function setCat(cat, button) {
+      currentCat = cat;
+      document.queryAll(".tab").forEach(tab => tab.classList.remove("active"));
+      button.classList.add("active");
+      render();
+    }
+    function isImage(value) { return /^https?:\/\//i.test(value) || /^data:image/i.test(value); }
+    function render() {
+      const query = document.getElementById("searchInput")?.value?.toLowerCase() || "";
+      const sort = document.getElementById("sortSelect")?.value || "discount";
+      let visible = products.filter(p => (currentCat === "전체" || p.category === currentCat) && p.name.toLowerCase().includes(query));
+      visible = visible.sort((a, b) => sort === "low" ? a.price - b.price : (1 - b.price/b.orig) - (1 - a.price/a.orig));
+      document.getElementById("productGrid").innerHTML = visible.map(p => {
+        const discount = p.orig > 0 ? Math.round((1 - p.price/p.orig) * 100) : 0;
+        const thumb = isImage(p.emoji) ? `<img src="${p.emoji}" alt="${p.name}">` : p.emoji;
+        return `<article class="card"><div class="thumb">${thumb}<span class="badge">${discount}%↓</span><span class="rocket">쿠팡 구매</span></div><div class="info"><div><div class="cat">${p.category}</div><div class="title">${p.name}</div><div class="price-box"><span class="orig-price">${p.orig.toLocaleString()}원</span><br><span class="sale-price">${p.price.toLocaleString()}원</span></div></div><button class="buy-btn" type="button" onclick='openCoupang(${JSON.stringify(p.name)}, ${JSON.stringify(p.url || "")})'>쿠팡에서 구매하기</button></div></article>`;
+      }).join("");
+    }
+
+    function addProduct() {
+      const p = { id: Date.now(), category: document.getElementById("newCat").value, emoji: document.getElementById("newEmoji").value || "🍽️", name: document.getElementById("newName").value.trim(), orig: Number(document.getElementById("newOrig").value), price: Number(document.getElementById("newPrice").value), url: document.getElementById("newUrl").value.trim() };
+      if (!p.name || p.orig <= 0 || p.price <= 0) { alert("상품명과 가격을 모두 입력하세요."); return; }
+      products.push(p); syncStorage(); render(); renderAdmin();
+      ["newEmoji","newName","newOrig","newPrice","newUrl"].forEach(id => document.getElementById(id).value = "");
+    }
+    function renderAdmin() {
+      document.getElementById("adminList").innerHTML = products.map(p => `<div class="admin-row"><label>${p.name}</label><input value="${p.url || ""}" onchange="updateUrl(${p.id}, this.value)" placeholder="쿠팡 상세 또는 검색 링크"><button class="del-btn" onclick="deleteProduct(${p.id})">삭제</button></div>`).join("");
+    }
+    function updateUrl(id, url) { const p = products.find(item => item.id === id); if (p) { p.url = url.trim(); syncStorage(); } }
+    function deleteProduct(id) { products = products.filter(p => p.id !== id); syncStorage(); render(); renderAdmin(); }
+    function saveLinks() { syncStorage(); toggleAdmin(); }
+    function resetProducts() { products = JSON.parse(JSON.stringify(defaultProducts)); syncStorage(); render(); renderAdmin(); }
+
+    render();
   </script>
 </body>
 </html>
