@@ -1,1 +1,293 @@
-placeholder
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오늘의 초저가 먹거리 최저가 조회</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: #f5f6f8; color: #111; }
+    header { background: #fff; border-bottom: 1px solid #e5e8eb; position: sticky; top: 0; z-index: 100; }
+    .nav { max-width: 1100px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+    .logo { font-size: 22px; font-weight: 800; color: #e52528; letter-spacing: -0.5px; }
+    .logo span { color: #0074e9; }
+    .search-wrap { flex: 1; min-width: 240px; max-width: 520px; }
+    .search-box { display: flex; }
+    .search-box input { width: 100%; padding: 10px 14px; border: 2px solid #0074e9; border-right: 0; border-radius: 8px 0 0 8px; font-size: 14px; outline: none; }
+    .search-btn { border: 0; background: #0074e9; color: #fff; padding: 10px 16px; border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .voice-btn { border: 2px solid #0074e9; border-right: 0; background: #fff; color: #0074e9; min-width: 44px; padding: 8px 10px; font-size: 18px; cursor: pointer; }
+    .voice-btn.listening { background: #fee2e2; border-color: #ef4444; color: #ef4444; animation: pulse 1s infinite; }
+    .voice-status { min-height: 18px; margin-top: 6px; color: #6b7280; font-size: 12px; text-align: right; }
+    @keyframes pulse { 50% { transform: scale(1.08); } }
+    .admin-btn { background: #1f2937; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
+    .random-menu { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: linear-gradient(135deg, #fff7ed, #eff6ff); border: 1px solid #fed7aa; border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
+    .random-menu-main { min-width: 0; }
+    .random-title { font-size: 13px; color: #6b7280; margin-bottom: 6px; }
+    .random-result { font-size: 18px; font-weight: 800; }
+    .random-btn { flex: 0 0 auto; border: none; background: #e52528; color: #fff; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
+    .random-btn:hover { background: #c91d20; }
+    .lunch-menu { background: linear-gradient(135deg, #f0fdf4, #fffbeb); border: 1px solid #bbf7d0; border-radius: 14px; padding: 20px; margin-bottom: 24px; }
+    .lunch-menu-heading { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .lunch-menu-description { color: #6b7280; font-size: 13px; margin-bottom: 14px; }
+    .lunch-menu-result { min-height: 70px; padding: 14px; background: rgba(255,255,255,.8); border-radius: 10px; line-height: 1.7; }
+    .lunch-menu-name { font-size: 18px; font-weight: 800; }
+    .lunch-menu-items { color: #374151; }
+    .lunch-menu-note { color: #6b7280; font-size: 12px; margin-top: 10px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tab { padding: 8px 16px; border-radius: 20px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .tab.active { background: #0074e9; color: #fff; border-color: #0074e9; }
+    .sort-select { padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; }
+    .admin-panel { display: none; background: #fff; border: 2px solid #0074e9; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .admin-panel.open { display: block; }
+    .admin-panel h3 { font-size: 16px; margin-bottom: 12px; color: #0074e9; }
+    .add-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 18px; }
+    .add-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .add-grid input, .add-grid select { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; width: 100%; }
+    .add-btn, .save-btn { background: #0074e9; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .reset-btn, .del-btn { background: #6b7280; color: #fff; border: none; padding: 8px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .del-btn { background: #ef4444; }
+    .admin-row { display: grid; grid-template-columns: 180px 1fr 64px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .admin-row label { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-row input { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; width: 100%; }
+    .admin-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 18px; }
+    .card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #e5e8eb; display: flex; flex-direction: column; transition: transform 0.15s, box-shadow 0.15s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+    .thumb { height: 150px; background: #f0f4f8; display: flex; align-items: center; justify-content: center; font-size: 56px; position: relative; overflow: hidden; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .badge { position: absolute; top: 10px; left: 10px; background: #e52528; color: #fff; font-size: 12px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    .rocket { position: absolute; bottom: 10px; right: 10px; background: #0074e9; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 4px; }
+    .info { padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .cat { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .title { font-size: 15px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; color: #111; }
+    .price-box { margin-bottom: 14px; }
+    .orig-price { font-size: 13px; color: #9ca3af; text-decoration: line-through; }
+    .sale-price { font-size: 20px; font-weight: 800; color: #e52528; }
+    .buy-btn { display: block; width: 100%; text-align: center; background: #0074e9; color: #fff; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; }
+    footer { max-width: 1100px; margin: 40px auto; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e8eb; }
+    @media (max-width: 600px) { .random-menu { align-items: stretch; flex-direction: column; } .random-btn { width: 100%; } .admin-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <form class="nav" id="coupangSearchForm">
+      <div class="logo">초저가<span>먹방딜</span></div>
+      <div class="search-wrap">
+        <div class="search-box">
+          <input type="search" id="coupangSearchInput" placeholder="쿠팡에서 먹거리 검색..." aria-label="쿠팡에서 먹거리 검색" />
+          <button class="voice-btn" id="voiceButton" type="button" title="음성으로 검색" aria-label="음성으로 검색">🎤</button>
+          <button class="search-btn" type="submit">검색</button>
+        </div>
+        <div class="voice-status" id="voiceStatus" role="status" aria-live="polite"></div>
+      </div>
+      <button type="button" class="admin-btn" onclick="toggleAdmin()">상품 · 링크 관리</button>
+    </form>
+  </header>
+
+  <div class="container">
+    <div class="admin-panel" id="adminPanel">
+      <h3>상품 추가 · 삭제 및 쿠팡 링크 관리</h3>
+      <div class="add-box">
+        <div class="add-grid">
+          <select id="newCat"><option value="음식">음식</option><option value="간식">간식</option><option value="음료">음료</option><option value="디저트">디저트</option><option value="배달·밀키트">배달·밀키트</option></select>
+          <input type="text" id="newEmoji" placeholder="이모지 또는 이미지 URL" />
+          <input type="text" id="newName" placeholder="상품명" />
+          <input type="number" id="newOrig" placeholder="정상가" />
+          <input type="number" id="newPrice" placeholder="할인가" />
+          <input type="text" id="newUrl" placeholder="쿠팡 상세 또는 검색 링크" />
+        </div>
+        <button class="add-btn" type="button" onclick="addProduct()">새 상품 추가</button>
+      </div>
+      <div id="adminList"></div>
+      <div class="admin-actions"><button class="save-btn" type="button" onclick="saveLinks()">변경사항 저장 및 닫기</button><button class="reset-btn" type="button" onclick="resetProducts()">기본 상품으로 초기화</button></div>
+    </div>
+
+    <section class="random-menu" aria-live="polite">
+      <div class="random-menu-main">
+        <div class="random-title">🎲 오늘의 추천 메뉴</div>
+        <div class="random-result" id="randomMenuResult">지금의 메뉴를 추천해요!</div>
+      </div>
+      <button class="random-btn" type="button" onclick="pickRandomMenu()">오늘의 메뉴 뽑기</button>
+    </section>
+
+    <section class="lunch-menu" aria-live="polite" aria-labelledby="lunchMenuHeading">
+      <h2 class="lunch-menu-heading" id="lunchMenuHeading">🎒 어린이 점심 도시락 추천</h2>
+      <p class="lunch-menu-description">아이들이 먹기 편하고 알록달록한 도시락 메뉴를 골라드려요.</p>
+      <div class="lunch-menu-result" id="lunchMenuResult">
+        <div class="lunch-menu-name">오늘은 어떤 도시락을 쌀까요?</div>
+        <div class="lunch-menu-items">버튼을 눌러 어린이 도시락 메뉴를 추천받아 보세요.</div>
+      </div>
+      <p class="lunch-menu-note">※ 알레르기나 식이 제한이 있는 경우 재료를 조정하고, 포도·방울토마토 등은 어린이가 먹기 좋은 크기로 잘라 주세요.</p>
+      <button class="random-btn" type="button" onclick="pickKidsLunch()" style="margin-top:14px">도시락 메뉴 추천받기</button>
+    </section>
+
+    <div class="filters">
+      <div class="tabs" id="categoryTabs">
+        <button class="tab active" data-cat="전체" onclick="setCat('전체', this)">전체</button>
+        <button class="tab" data-cat="음식" onclick="setCat('음식', this)">음식</button>
+        <button class="tab" data-cat="간식" onclick="setCat('간식', this)">간식</button>
+        <button class="tab" data-cat="음료" onclick="setCat('음료', this)">음료</button>
+        <button class="tab" data-cat="디저트" onclick="setCat('디저트', this)">디저트</button>
+        <button class="tab" data-cat="배달·밀키트" onclick="setCat('배달·밀키트', this)">배달·밀키트</button>
+      </div>
+      <select class="sort-select" id="sortSelect" onchange="render()"><option value="discount">할인율 높은순</option><option value="low">최저가순</option></select>
+    </div>
+    <div class="grid" id="productGrid"></div>
+  </div>
+
+  <footer>이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br />표시된 가격은 변동될 수 있습니다.</footer>
+
+  <script>
+    const defaultProducts = [
+      { id: 1, category: "음식", emoji: "🍜", name: "신라면 20봉 멀티팩 특가", orig: 19800, price: 12900, url: "" },
+      { id: 2, category: "음료", emoji: "🥤", name: "코카콜라 제로 355ml 24캔", orig: 26900, price: 16400, url: "" },
+      { id: 3, category: "간식", emoji: "🍪", name: "오리온 초코파이 정 36개입 대용량", orig: 15000, price: 9400, url: "" },
+      { id: 4, category: "디저트", emoji: "🍰", name: "필라델피아 치즈케이크 큐브 794g", orig: 21900, price: 14500, url: "" },
+      { id: 5, category: "배달·밀키트", emoji: "🍗", name: "순살 크리스피 치킨 1kg 에어프라이어용", orig: 16900, price: 9900, url: "" },
+      { id: 6, category: "음식", emoji: "🍚", name: "햇반 210g 24개입 실속박스", orig: 31000, price: 21400, url: "" },
+      { id: 7, category: "음료", emoji: "☕", name: "카누 미니 다크 로스트 100T", orig: 23500, price: 15800, url: "" },
+      { id: 8, category: "간식", emoji: "🍟", name: "프링글스 오리지널 110g 6개 묶음", orig: 18000, price: 10900, url: "" }
+    ];
+    const kidsLunchMenus = [
+      { name: "알록달록 소불고기 도시락", items: "소불고기 주먹밥 · 달걀말이 · 브로콜리 · 딸기" },
+      { name: "고소한 닭고기 도시락", items: "닭가슴살 미니 주먹밥 · 옥수수 · 오이 스틱 · 바나나" },
+      { name: "든든한 햄치즈 도시락", items: "햄치즈 달걀 샌드위치 · 방울토마토 · 고구마구이 · 귤" },
+      { name: "귀여운 미니김밥 도시락", items: "참치 미니김밥 · 달걀말이 · 당근 볶음 · 사과" },
+      { name: "달콤짭짤 두부강정 도시락", items: "두부강정 · 밥 작은 주먹밥 · 오이·파프리카 스틱 · 포도" },
+      { name: "포근한 돈까스 도시락", items: "한입 돈까스 · 밥 · 브로콜리 · 단호박구이 · 키위" }
+    ];
+
+    let products;
+    try {
+      const savedProducts = JSON.parse(localStorage.getItem("coupang_deal_products"));
+      products = Array.isArray(savedProducts) ? savedProducts : JSON.parse(JSON.stringify(defaultProducts));
+    } catch (error) {
+      products = JSON.parse(JSON.stringify(defaultProducts));
+    }
+    let currentCat = "전체";
+
+    function syncStorage() { localStorage.setItem("coupang_deal_products", JSON.stringify(products)); }
+    function couponSearchUrl(query) { return "https://www.coupang.com/np/search?q=" + encodeURIComponent(query) + "&channel=recent"; }
+    function openCoupang(query, url) {
+      const target = url && /^https?:\/\//i.test(url) ? url : couponSearchUrl(query);
+      window.open(target, "_blank", "noopener,noreferrer");
+    }
+    document.getElementById("coupangSearchForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const input = document.getElementById("coupangSearchInput");
+      const query = input.value.trim();
+      if (!query) { input.focus(); return; }
+      openCoupang(query, "");
+    });
+    function toggleAdmin() { document.getElementById("adminPanel").classList.toggle("open"); renderAdmin(); }
+    function setCat(cat, button) {
+      currentCat = cat;
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      button.classList.add("active");
+      render();
+    }
+    function isImage(value) { return /^https?:\/\//i.test(value) || /^data:image/i.test(value); }
+    function pickRandomMenu() {
+      const candidates = products.filter(product => currentCat === "전체" || product.category === currentCat);
+      const result = document.getElementById("randomMenuResult");
+      if (!candidates.length) { result.textContent = "추천할 메뉴가 없어요."; return; }
+      const selected = candidates[Math.floor(Math.random() * candidates.length)];
+      result.textContent = `${selected.emoji && !isImage(selected.emoji) ? selected.emoji + " " : ""}${selected.name} · ${Number(selected.price).toLocaleString()}원`;
+    }
+    function pickKidsLunch() {
+      const menu = kidsLunchMenus[Math.floor(Math.random() * kidsLunchMenus.length)];
+      const result = document.getElementById("lunchMenuResult");
+      result.replaceChildren();
+      const name = document.createElement("div");
+      name.className = "lunch-menu-name";
+      name.textContent = `🍱 ${menu.name}`;
+      const items = document.createElement("div");
+      items.className = "lunch-menu-items";
+      items.textContent = menu.items;
+      result.append(name, items);
+    }
+    function render() {
+      const query = document.getElementById("coupangSearchInput").value.toLowerCase();
+      const sort = document.getElementById("sortSelect").value;
+      let visible = products.filter(product => (currentCat === "전체" || product.category === currentCat) && String(product.name).toLowerCase().includes(query));
+      visible = visible.sort((a, b) => sort === "low" ? a.price - b.price : (1 - b.price / b.orig) - (1 - a.price / a.orig));
+      document.getElementById("productGrid").innerHTML = visible.map(product => {
+        const discount = product.orig > 0 ? Math.round((1 - product.price / product.orig) * 100) : 0;
+        const thumb = isImage(product.emoji) ? `<img src="${product.emoji}" alt="${product.name}">` : product.emoji;
+        return `<article class="card"><div class="thumb">${thumb}<span class="badge">${discount}%↓</span><span class="rocket">쿠팡 구매</span></div><div class="info"><div><div class="cat">${product.category}</div><div class="title">${product.name}</div><div class="price-box"><span class="orig-price">${Number(product.orig).toLocaleString()}원</span><br><span class="sale-price">${Number(product.price).toLocaleString()}원</span></div></div><button class="buy-btn" type="button" onclick='openCoupang(${JSON.stringify(product.name)}, ${JSON.stringify(product.url || "")})'>쿠팡에서 최저가 보기</button></div></article>`;
+      }).join("");
+    }
+    function addProduct() {
+      const product = { id: Date.now(), category: document.getElementById("newCat").value, emoji: document.getElementById("newEmoji").value || "🍽️", name: document.getElementById("newName").value.trim(), orig: Number(document.getElementById("newOrig").value), price: Number(document.getElementById("newPrice").value), url: document.getElementById("newUrl").value.trim() };
+      if (!product.name || product.orig <= 0 || product.price <= 0) { alert("상품명과 가격을 모두 입력하세요."); return; }
+      products.push(product); syncStorage(); render(); renderAdmin();
+      ["newEmoji", "newName", "newOrig", "newPrice", "newUrl"].forEach(id => document.getElementById(id).value = "");
+    }
+    function renderAdmin() {
+      document.getElementById("adminList").innerHTML = products.map(product => `<div class="admin-row"><label>${product.name}</label><input value="${product.url || ""}" onchange="updateUrl(${product.id}, this.value)" placeholder="쿠팡 상품 또는 검색 링크"><button class="del-btn" type="button" onclick="deleteProduct(${product.id})">삭제</button></div>`).join("");
+    }
+    function updateUrl(id, url) { const product = products.find(item => item.id === id); if (product) { product.url = url.trim(); syncStorage(); } }
+    function deleteProduct(id) { products = products.filter(product => product.id !== id); syncStorage(); render(); renderAdmin(); }
+    function saveLinks() { syncStorage(); toggleAdmin(); }
+    function resetProducts() { products = JSON.parse(JSON.stringify(defaultProducts)); syncStorage(); render(); renderAdmin(); }
+
+    const voiceButton = document.getElementById("voiceButton");
+    const voiceStatus = document.getElementById("voiceStatus");
+    const searchInput = document.getElementById("coupangSearchInput");
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      voiceButton.disabled = true;
+      voiceButton.title = "이 브라우저는 음성인식을 지원하지 않습니다";
+      voiceStatus.textContent = "음성인식은 Chrome 또는 Edge 브라우저에서 사용할 수 있습니다.";
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "ko-KR";
+      recognition.interimResults = true;
+      recognition.continuous = false;
+      voiceButton.addEventListener("click", () => {
+        try { recognition.start(); }
+        catch (error) { voiceStatus.textContent = "음성인식이 이미 실행 중입니다."; }
+      });
+      recognition.onstart = () => {
+        voiceButton.classList.add("listening");
+        voiceButton.textContent = "🔴";
+        voiceStatus.textContent = "듣고 있습니다... 말씀해 주세요.";
+      };
+      recognition.onresult = event => {
+        let interim = "";
+        let finalText = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const text = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalText += text;
+          else interim += text;
+        }
+        searchInput.value = (finalText || interim).trim();
+        render();
+      };
+      recognition.onend = () => {
+        voiceButton.classList.remove("listening");
+        voiceButton.textContent = "🎤";
+        const query = searchInput.value.trim();
+        if (query) { voiceStatus.textContent = `인식 결과: ${query}`; openCoupang(query, ""); }
+        else { voiceStatus.textContent = "음성을 인식하지 못했습니다. 다시 시도해 주세요."; }
+      };
+      recognition.onerror = event => {
+        voiceButton.classList.remove("listening");
+        voiceButton.textContent = "🎤";
+        const messages = {
+          "not-allowed": "마이크 권한이 필요합니다. 브라우저 주소창의 마이크 권한을 허용해 주세요.",
+          "no-speech": "음성이 감지되지 않았습니다. 다시 시도해 주세요.",
+          "audio-capture": "사용 가능한 마이크를 찾을 수 없습니다.",
+          "network": "음성인식 네트워크 오류가 발생했습니다.",
+          "aborted": "음성인식이 취소되었습니다."
+        };
+        voiceStatus.textContent = messages[event.error] || "음성인식 중 오류가 발생했습니다.";
+      };
+    }
+    searchInput.addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
