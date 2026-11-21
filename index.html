@@ -77,7 +77,7 @@
   </header>
   <main id="home">
     <section class="hero">
-      <div><div class="eyebrow">맛있는 정보, 함께 나눠요</div><h1>먹거리 궁금증,<br />서로 묻고 답해요</h1><p>상품 추천부터 보관법, 가성비 비교까지<br />궁금한 점을 질문하고 다른 사람의 경험을 나눠보세요.</p></div>
+      <div><div class="eyebrow">맛있는 정보, 함께 나눠요</div><h1>먹거리 궁금증,<br />서로 묻고 답해요</h1><p>상품 추천부터 보관법, 가성비 비교까지<br />궁금한 점을 질문하고 경험을 나눠보세요.</p></div>
       <div class="hero-icon" aria-hidden="true">💬</div>
     </section>
 
@@ -106,7 +106,7 @@
     </section>
 
     <section class="section" id="deals">
-      <div class="section-head"><div><h2>오늘의 먹거리 특가</h2><p class="sub">가격은 예시이며 실제 판매가와 상품 링크를 확인해 주세요.</p></div></div>
+      <div class="section-head"><div><h2>오늘의 먹거리 특가</h2><p class="sub">아래 상품은 쿠팡 검색 결과로 이동합니다.</p></div></div>
       <div id="dealList" class="deals"></div>
     </section>
   </main>
@@ -114,25 +114,25 @@
   <script>
     const STORAGE_KEY = 'lowprice_qa_v1';
     const starterQuestions = [
-      { id:'sample-1', category:'상품 추천', title:'간편하게 먹을 수 있는 가성비 단백질 간식 추천해주세요', body:'출근할 때 들고 다니기 좋고 너무 달지 않은 제품을 찾고 있어요. 가격대와 맛도 알려주시면 감사하겠습니다!', name:'먹거리초보', createdAt:Date.now()-3600000, votes:3, answers:[{name:'오늘도한끼',body:'그릭요거트나 구운 계란이 간편해요. 묶음으로 사면 개당 가격도 괜찮습니다.'}] },
-      { id:'sample-2', category:'요리·보관', title:'대용량 냉동만두 맛있게 보관하는 방법이 있나요?', body:'봉지를 열고 나면 냉동실에서 서로 붙는 경우가 많더라고요. 좋은 보관 팁이 궁금해요.', name:'만두러버', createdAt:Date.now()-7200000, votes:1, answers:[] }
+      { id:'sample-1', category:'상품 추천', title:'간편하게 먹을 수 있는 가성비 단백질 간식 추천해주세요', body:'출근할 때 들고 다니기 좋고 너무 달지 않은 제품을 찾고 있어요.', name:'먹거리초보', createdAt:Date.now()-3600000, votes:3, answers:[{name:'오늘도한끼',body:'그릭요거트나 구운 계란이 간편해요.'}] },
+      { id:'sample-2', category:'요리·보관', title:'대용량 냉동만두 맛있게 보관하는 방법이 있나요?', body:'봉지를 열고 나면 냉동실에서 서로 붙는 경우가 많더라고요.', name:'만두러버', createdAt:Date.now()-7200000, votes:1, answers:[] }
     ];
     const deals = [
-      { emoji:'🍜', name:'신라면 멀티팩 특가', old:19800, price:12900, url:'https://www.coupang.com/' },
-      { emoji:'🥤', name:'코카콜라 제로 355ml 묶음', old:26900, price:16400, url:'https://www.coupang.com/' },
-      { emoji:'🍪', name:'초코파이 대용량 간식', old:15000, price:9400, url:'https://www.coupang.com/' },
-      { emoji:'🍚', name:'즉석밥 실속 박스', old:31000, price:21400, url:'https://www.coupang.com/' }
+      { emoji:'🍜', name:'신라면 멀티팩 특가', old:19800, price:12900, search:'신라면 멀티팩' },
+      { emoji:'🥤', name:'코카콜라 제로 355ml 묶음', old:26900, price:16400, search:'코카콜라 제로 355ml 24캔' },
+      { emoji:'🍪', name:'초코파이 대용량 간식', old:15000, price:9400, search:'오리온 초코파이 정 대용량' },
+      { emoji:'🍚', name:'즉석밥 실속 박스', old:31000, price:21400, search:'햇반 210g 24개입' }
     ];
     let questions = loadQuestions();
     const won = value => `${Number(value).toLocaleString('ko-KR')}원`;
+    function coupangSearchUrl(query) { return `https://www.coupang.com/np/search?q=${encodeURIComponent(query)}&channel=recent`; }
     function loadQuestions() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed)) return parsed; }
       } catch (error) { console.warn('저장된 질문을 불러오지 못했습니다.', error); }
-      return structuredCloneSafe(starterQuestions);
+      return JSON.parse(JSON.stringify(starterQuestions));
     }
-    function structuredCloneSafe(value) { return JSON.parse(JSON.stringify(value)); }
     function saveQuestions() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(questions)); }
       catch (error) { alert('브라우저 저장 공간에 저장하지 못했습니다.'); }
@@ -156,8 +156,14 @@
         </article>`).join('');
     }
     function renderDeals() {
-      document.getElementById('dealList').innerHTML = deals.map(item => `<article class="deal"><div class="deal-emoji" aria-hidden="true">${item.emoji}</div><h3>${safeText(item.name)}</h3><div class="old">${won(item.old)}</div><div class="price">${won(item.price)}</div><a href="${item.url}" target="_blank" rel="noopener noreferrer">상품 확인하기 ↗</a></article>`).join('');
+      document.getElementById('dealList').innerHTML = deals.map(item => {
+        const url = coupangSearchUrl(item.search);
+        return `<article class="deal"><div class="deal-emoji" aria-hidden="true">${item.emoji}</div><h3>${safeText(item.name)}</h3><div class="old">${won(item.old)}</div><div class="price">${won(item.price)}</div><a href="${url}" target="_blank" rel="noopener noreferrer">쿠팡 검색하기 ↗</a></article>`;
+      }).join('');
     }
+    document.getElementById('askForm').addEventListener('submit', event => {
+      event.preventEvent();
+    });
     document.getElementById('askForm').addEventListener('submit', event => {
       event.preventDefault();
       const title = document.getElementById('askTitle').value.trim();
