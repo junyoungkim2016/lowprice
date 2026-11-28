@@ -77,17 +77,18 @@
   <footer>이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.<br>표시된 가격은 변동될 수 있으며 최종 구매 조건은 판매처에서 확인해 주세요.</footer>
 <script>
   const defaultProducts = [
-    {id:1,category:'음식',emoji:'🍜',name:'신라면 20봉 멀티팩 특가',orig:19800,price:12900,url:''},
-    {id:2,category:'음료',emoji:'🥤',name:'코카콜라 제로 355ml 24캔',orig:26900,price:16400,url:''},
-    {id:3,category:'간식',emoji:'🍪',name:'오리온 초코파이 정 36개입 대용량',orig:15000,price:9400,url:''},
+    {id:1,category:'음식',emoji:'🍜',name:'신라면 20봉 멀티팩 특가',orig:19800,price:12900,url:'https://www.coupang.com/vp/products/2283285395'},
+    {id:2,category:'음료',emoji:'🥤',name:'코카콜라 제로 355ml 24캔',orig:26900,price:16400,url:'https://www.coupang.com/vp/products/1033242573'},
+    {id:3,category:'간식',emoji:'🍪',name:'오리온 초코파이 정 36개입 대용량',orig:15000,price:9400,url:'https://www.coupang.com/vp/products/1326681980'},
     {id:4,category:'디저트',emoji:'🍰',name:'필라델피아 치즈케이크 큐브 794g',orig:21900,price:14500,url:''},
     {id:5,category:'배달·밀키트',emoji:'🍗',name:'순살 크리스피 치킨 1kg 에어프라이어용',orig:16900,price:9900,url:''},
-    {id:6,category:'음식',emoji:'🍚',name:'햇반 210g 24개입 실속박스',orig:31000,price:21400,url:''},
-    {id:7,category:'음료',emoji:'☕',name:'카누 미니 다크 로스트 100T',orig:23500,price:15800,url:''},
-    {id:8,category:'간식',emoji:'🍟',name:'프링글스 오리지널 110g 6개 묶음',orig:18000,price:10900,url:''}
+    {id:6,category:'음식',emoji:'🍚',name:'햇반 210g 24개입 실속박스',orig:31000,price:21400,url:'https://www.coupang.com/vp/products/18690487095'},
+    {id:7,category:'음료',emoji:'☕',name:'카누 미니 다크 로스트 100T',orig:23500,price:15800,url:'https://www.coupang.com/vp/products/1263352987'},
+    {id:8,category:'간식',emoji:'🍟',name:'프링글스 오리지널 110g 6개 묶음',orig:18000,price:10900,url:'https://www.coupang.com/vp/products/1357768515'}
   ];
+  const fixedProductUrls = Object.fromEntries(defaultProducts.filter(product => product.url).map(product => [product.id, product.url]));
   const readArray = (key, fallback) => { try { const value=JSON.parse(localStorage.getItem(key)); return Array.isArray(value)?value:fallback; } catch { return fallback; } };
-  let products = readArray('coupang_deal_products', defaultProducts);
+  let products = readArray('coupang_deal_products', defaultProducts).map(product => ({...product, ...(fixedProductUrls[product.id] ? {url: fixedProductUrls[product.id]} : {})}));
   let cart = readArray('lowprice_cart', []);
   let currentCategory = '전체';
   const money = value => `${Number(value || 0).toLocaleString('ko-KR')}원`;
