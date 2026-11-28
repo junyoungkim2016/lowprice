@@ -7,287 +7,150 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; }
     body { background: #f5f6f8; color: #111; }
-    header { background: #fff; border-bottom: 1px solid #e5e8eb; position: sticky; top: 0; z-index: 100; }
-    .nav { max-width: 1100px; margin: 0 auto; padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
-    .logo { font-size: 22px; font-weight: 800; color: #e52528; letter-spacing: -0.5px; }
-    .logo span { color: #0074e9; }
-    .search-wrap { flex: 1; min-width: 240px; max-width: 520px; }
-    .search-box { display: flex; }
-    .search-box input { width: 100%; padding: 10px 14px; border: 2px solid #0074e9; border-right: 0; border-radius: 8px 0 0 8px; font-size: 14px; outline: none; }
-    .search-btn { border: 0; background: #0074e9; color: #fff; padding: 10px 16px; border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 700; cursor: pointer; }
-    .voice-btn { border: 2px solid #0074e9; border-right: 0; background: #fff; color: #0074e9; min-width: 44px; padding: 8px 10px; font-size: 18px; cursor: pointer; }
-    .voice-btn.listening { background: #fee2e2; border-color: #ef4444; color: #ef4444; animation: pulse 1s infinite; }
-    .voice-status { min-height: 18px; margin-top: 6px; color: #6b7280; font-size: 12px; text-align: right; }
-    @keyframes pulse { 50% { transform: scale(1.08); } }
-    .admin-btn { background: #1f2937; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    header { background: #fff; border-bottom: 1px solid #e5e8eb; position: sticky; top: 0; z-index: 5; }
+    .nav { max-width: 1100px; margin: auto; padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+    .logo { font-size: 22px; font-weight: 800; color: #e52528; white-space: nowrap; }.logo span { color: #0074e9; }
+    .search { display: flex; flex: 1; min-width: 220px; max-width: 520px; }
+    .search input { flex: 1; min-width: 0; padding: 11px 14px; border: 2px solid #0074e9; border-radius: 8px 0 0 8px; font-size: 14px; }
+    button { cursor: pointer; font-weight: 700; }
+    .search button { padding: 10px 16px; border: 0; border-radius: 0 8px 8px 0; background: #0074e9; color: white; }
+    .nav-actions { display: flex; gap: 8px; }
+    .nav-actions button, .primary { border: 0; border-radius: 8px; padding: 10px 14px; background: #1f2937; color: white; }
+    .nav-actions .cart-open { background: #e52528; }
     .container { max-width: 1100px; margin: 24px auto; padding: 0 20px; }
-    .random-menu { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: linear-gradient(135deg, #fff7ed, #eff6ff); border: 1px solid #fed7aa; border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
-    .random-menu-main { min-width: 0; }
-    .random-title { font-size: 13px; color: #6b7280; margin-bottom: 6px; }
-    .random-result { font-size: 18px; font-weight: 800; }
-    .random-btn { flex: 0 0 auto; border: none; background: #e52528; color: #fff; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 800; cursor: pointer; }
-    .random-btn:hover { background: #c91d20; }
-    .lunch-menu { background: linear-gradient(135deg, #f0fdf4, #fffbeb); border: 1px solid #bbf7d0; border-radius: 14px; padding: 20px; margin-bottom: 24px; }
-    .lunch-menu-heading { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
-    .lunch-menu-description { color: #6b7280; font-size: 13px; margin-bottom: 14px; }
-    .lunch-menu-result { min-height: 70px; padding: 14px; background: rgba(255,255,255,.8); border-radius: 10px; line-height: 1.7; }
-    .lunch-menu-name { font-size: 18px; font-weight: 800; }
-    .lunch-menu-items { color: #374151; }
-    .lunch-menu-note { color: #6b7280; font-size: 12px; margin-top: 10px; }
-    .filters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .notice { margin-bottom: 18px; padding: 14px 16px; border: 1px solid #fed7aa; border-radius: 10px; background: #fff7ed; color: #7c2d12; font-size: 13px; line-height: 1.6; }
+    .filters { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tab { padding: 8px 16px; border-radius: 20px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .tab.active { background: #0074e9; color: #fff; border-color: #0074e9; }
-    .sort-select { padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; }
-    .admin-panel { display: none; background: #fff; border: 2px solid #0074e9; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-    .admin-panel.open { display: block; }
-    .admin-panel h3 { font-size: 16px; margin-bottom: 12px; color: #0074e9; }
-    .add-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 18px; }
-    .add-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
-    .add-grid input, .add-grid select { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; width: 100%; }
-    .add-btn, .save-btn { background: #0074e9; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-    .reset-btn, .del-btn { background: #6b7280; color: #fff; border: none; padding: 8px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
-    .del-btn { background: #ef4444; }
-    .admin-row { display: grid; grid-template-columns: 180px 1fr 64px; gap: 8px; align-items: center; margin-bottom: 8px; }
-    .admin-row label { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .admin-row input { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; width: 100%; }
-    .admin-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .tab { padding: 8px 15px; border: 1px solid #d1d5db; border-radius: 20px; background: white; }
+    .tab.active { border-color: #0074e9; background: #0074e9; color: white; }
+    select, input { font: inherit; }
+    .sort { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; background: white; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 18px; }
-    .card { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid #e5e8eb; display: flex; flex-direction: column; transition: transform 0.15s, box-shadow 0.15s; }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
-    .thumb { height: 150px; background: #f0f4f8; display: flex; align-items: center; justify-content: center; font-size: 56px; position: relative; overflow: hidden; }
+    .card { overflow: hidden; display: flex; flex-direction: column; border: 1px solid #e5e8eb; border-radius: 14px; background: white; }
+    .thumb { height: 150px; display: grid; place-items: center; background: #f0f4f8; font-size: 56px; overflow: hidden; }
     .thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .badge { position: absolute; top: 10px; left: 10px; background: #e52528; color: #fff; font-size: 12px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
-    .rocket { position: absolute; bottom: 10px; right: 10px; background: #0074e9; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 4px; }
-    .info { padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .cat { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
-    .title { font-size: 15px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; color: #111; }
-    .price-box { margin-bottom: 14px; }
-    .orig-price { font-size: 13px; color: #9ca3af; text-decoration: line-through; }
-    .sale-price { font-size: 20px; font-weight: 800; color: #e52528; }
-    .buy-btn { display: block; width: 100%; text-align: center; background: #0074e9; color: #fff; text-decoration: none; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; }
-    footer { max-width: 1100px; margin: 40px auto; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e8eb; }
-    @media (max-width: 600px) { .random-menu { align-items: stretch; flex-direction: column; } .random-btn { width: 100%; } .admin-row { grid-template-columns: 1fr; } }
+    .info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 16px; }
+    .cat { margin-bottom: 4px; color: #6b7280; font-size: 12px; }.title { min-height: 42px; margin-bottom: 10px; font-size: 15px; font-weight: 700; line-height: 1.4; }
+    .orig { color: #9ca3af; font-size: 13px; text-decoration: line-through; }.price { margin: 2px 0 14px; color: #e52528; font-size: 20px; font-weight: 800; }
+    .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .card-actions button { padding: 10px 6px; border: 0; border-radius: 8px; background: #0074e9; color: white; font-size: 13px; }.card-actions .add { background: #e52528; }
+    .empty { grid-column: 1 / -1; padding: 36px; text-align: center; color: #6b7280; }
+    .admin { margin: 20px 0; padding: 16px; border: 1px solid #dbeafe; border-radius: 12px; background: white; }.admin h2 { margin-bottom: 12px; font-size: 16px; }
+    .admin-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 8px; }.admin-form input, .admin-form select { min-width: 0; padding: 9px; border: 1px solid #cbd5e1; border-radius: 6px; }
+    .admin-form button { border: 0; border-radius: 6px; background: #1f2937; color: white; }
+    .overlay { position: fixed; inset: 0; z-index: 10; display: none; justify-content: flex-end; background: #0007; }.overlay.open { display: flex; }
+    .cart-panel { width: min(100%, 480px); height: 100%; overflow-y: auto; padding: 22px; background: white; box-shadow: -8px 0 30px #0002; }
+    .cart-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }.cart-head h2 { font-size: 21px; }.close { border: 0; background: transparent; font-size: 26px; }
+    .cart-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 14px 0; border-bottom: 1px solid #e5e7eb; }.cart-name { font-weight: 700; }.cart-unit { margin-top: 5px; color: #6b7280; font-size: 13px; }
+    .cart-controls { display: flex; align-items: center; gap: 7px; }.cart-controls button { width: 30px; height: 30px; border: 1px solid #d1d5db; border-radius: 6px; background: white; }.cart-controls .remove { border: 0; color: #dc2626; }
+    .totals { margin: 18px 0; padding: 14px; border-radius: 10px; background: #f8fafc; }.total-line { display: flex; justify-content: space-between; margin: 5px 0; }.total-line strong { font-size: 18px; color: #e52528; }
+    .checkout { width: 100%; padding: 13px; border: 0; border-radius: 8px; background: #0074e9; color: white; font-size: 15px; }.checkout:disabled { background: #9ca3af; cursor: not-allowed; }
+    .cart-note { margin-top: 12px; color: #6b7280; font-size: 12px; line-height: 1.6; }.toast { position: fixed; bottom: 20px; left: 50%; z-index: 20; transform: translateX(-50%); padding: 12px 18px; border-radius: 8px; background: #111827; color: white; }
+    footer { max-width: 1100px; margin: 40px auto; padding: 20px; border-top: 1px solid #e5e8eb; color: #6b7280; text-align: center; font-size: 12px; line-height: 1.7; }
+    @media (max-width: 600px) { .nav { padding: 12px; }.container { padding: 0 12px; }.nav-actions { width: 100%; }.nav-actions button { flex: 1; }.filters { align-items: stretch; }.sort { width: 100%; } }
   </style>
 </head>
 <body>
   <header>
-    <form class="nav" id="coupangSearchForm">
+    <div class="nav">
       <div class="logo">초저가<span>먹방딜</span></div>
-      <div class="search-wrap">
-        <div class="search-box">
-          <input type="search" id="coupangSearchInput" placeholder="쿠팡에서 먹거리 검색..." aria-label="쿠팡에서 먹거리 검색" />
-          <button class="voice-btn" id="voiceButton" type="button" title="음성으로 검색" aria-label="음성으로 검색">🎤</button>
-          <button class="search-btn" type="submit">검색</button>
-        </div>
-        <div class="voice-status" id="voiceStatus" role="status" aria-live="polite"></div>
-      </div>
-      <button type="button" class="admin-btn" onclick="toggleAdmin()">상품 · 링크 관리</button>
-    </form>
+      <form class="search" id="searchForm"><input id="searchInput" type="search" placeholder="상품 검색..." aria-label="상품 검색"><button type="submit">검색</button></form>
+      <div class="nav-actions"><button type="button" onclick="document.getElementById('admin').scrollIntoView({behavior:'smooth'})">상품 관리</button><button type="button" class="cart-open" id="openCart">🛒 장바구니 <span id="cartCount">0</span></button></div>
+    </div>
   </header>
-
-  <div class="container">
-    <div class="admin-panel" id="adminPanel">
-      <h3>상품 추가 · 삭제 및 쿠팡 링크 관리</h3>
-      <div class="add-box">
-        <div class="add-grid">
-          <select id="newCat"><option value="음식">음식</option><option value="간식">간식</option><option value="음료">음료</option><option value="디저트">디저트</option><option value="배달·밀키트">배달·밀키트</option></select>
-          <input type="text" id="newEmoji" placeholder="이모지 또는 이미지 URL" />
-          <input type="text" id="newName" placeholder="상품명" />
-          <input type="number" id="newOrig" placeholder="정상가" />
-          <input type="number" id="newPrice" placeholder="할인가" />
-          <input type="text" id="newUrl" placeholder="쿠팡 상세 또는 검색 링크" />
-        </div>
-        <button class="add-btn" type="button" onclick="addProduct()">새 상품 추가</button>
-      </div>
-      <div id="adminList"></div>
-      <div class="admin-actions"><button class="save-btn" type="button" onclick="saveLinks()">변경사항 저장 및 닫기</button><button class="reset-btn" type="button" onclick="resetProducts()">기본 상품으로 초기화</button></div>
-    </div>
-
-    <section class="random-menu" aria-live="polite">
-      <div class="random-menu-main">
-        <div class="random-title">🎲 오늘의 추천 메뉴</div>
-        <div class="random-result" id="randomMenuResult">지금의 메뉴를 추천해요!</div>
-      </div>
-      <button class="random-btn" type="button" onclick="pickRandomMenu()">오늘의 메뉴 뽑기</button>
-    </section>
-
-    <section class="lunch-menu" aria-live="polite" aria-labelledby="lunchMenuHeading">
-      <h2 class="lunch-menu-heading" id="lunchMenuHeading">🎒 어린이 점심 도시락 추천</h2>
-      <p class="lunch-menu-description">아이들이 먹기 편하고 알록달록한 도시락 메뉴를 골라드려요.</p>
-      <div class="lunch-menu-result" id="lunchMenuResult">
-        <div class="lunch-menu-name">오늘은 어떤 도시락을 쌀까요?</div>
-        <div class="lunch-menu-items">버튼을 눌러 어린이 도시락 메뉴를 추천받아 보세요.</div>
-      </div>
-      <p class="lunch-menu-note">※ 알레르기나 식이 제한이 있는 경우 재료를 조정하고, 포도·방울토마토 등은 어린이가 먹기 좋은 크기로 잘라 주세요.</p>
-      <button class="random-btn" type="button" onclick="pickKidsLunch()" style="margin-top:14px">도시락 메뉴 추천받기</button>
-    </section>
-
-    <div class="filters">
-      <div class="tabs" id="categoryTabs">
-        <button class="tab active" data-cat="전체" onclick="setCat('전체', this)">전체</button>
-        <button class="tab" data-cat="음식" onclick="setCat('음식', this)">음식</button>
-        <button class="tab" data-cat="간식" onclick="setCat('간식', this)">간식</button>
-        <button class="tab" data-cat="음료" onclick="setCat('음료', this)">음료</button>
-        <button class="tab" data-cat="디저트" onclick="setCat('디저트', this)">디저트</button>
-        <button class="tab" data-cat="배달·밀키트" onclick="setCat('배달·밀키트', this)">배달·밀키트</button>
-      </div>
-      <select class="sort-select" id="sortSelect" onchange="render()"><option value="discount">할인율 높은순</option><option value="low">최저가순</option></select>
-    </div>
-    <div class="grid" id="productGrid"></div>
-  </div>
-
-  <footer>이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br />표시된 가격은 변동될 수 있습니다.</footer>
-
-  <script>
-    const defaultProducts = [
-      { id: 1, category: "음식", emoji: "🍜", name: "신라면 20봉 멀티팩 특가", orig: 19800, price: 12900, url: "" },
-      { id: 2, category: "음료", emoji: "🥤", name: "코카콜라 제로 355ml 24캔", orig: 26900, price: 16400, url: "" },
-      { id: 3, category: "간식", emoji: "🍪", name: "오리온 초코파이 정 36개입 대용량", orig: 15000, price: 9400, url: "" },
-      { id: 4, category: "디저트", emoji: "🍰", name: "필라델피아 치즈케이크 큐브 794g", orig: 21900, price: 14500, url: "" },
-      { id: 5, category: "배달·밀키트", emoji: "🍗", name: "순살 크리스피 치킨 1kg 에어프라이어용", orig: 16900, price: 9900, url: "" },
-      { id: 6, category: "음식", emoji: "🍚", name: "햇반 210g 24개입 실속박스", orig: 31000, price: 21400, url: "" },
-      { id: 7, category: "음료", emoji: "☕", name: "카누 미니 다크 로스트 100T", orig: 23500, price: 15800, url: "" },
-      { id: 8, category: "간식", emoji: "🍟", name: "프링글스 오리지널 110g 6개 묶음", orig: 18000, price: 10900, url: "" }
-    ];
-    const kidsLunchMenus = [
-      { name: "알록달록 소불고기 도시락", items: "소불고기 주먹밥 · 달걀말이 · 브로콜리 · 딸기" },
-      { name: "고소한 닭고기 도시락", items: "닭가슴살 미니 주먹밥 · 옥수수 · 오이 스틱 · 바나나" },
-      { name: "든든한 햄치즈 도시락", items: "햄치즈 달걀 샌드위치 · 방울토마토 · 고구마구이 · 귤" },
-      { name: "귀여운 미니김밥 도시락", items: "참치 미니김밥 · 달걀말이 · 당근 볶음 · 사과" },
-      { name: "달콤짭짤 두부강정 도시락", items: "두부강정 · 밥 작은 주먹밥 · 오이·파프리카 스틱 · 포도" },
-      { name: "포근한 돈까스 도시락", items: "한입 돈까스 · 밥 · 브로콜리 · 단호박구이 · 키위" }
-    ];
-
-    let products;
-    try {
-      const savedProducts = JSON.parse(localStorage.getItem("coupang_deal_products"));
-      products = Array.isArray(savedProducts) ? savedProducts : JSON.parse(JSON.stringify(defaultProducts));
-    } catch (error) {
-      products = JSON.parse(JSON.stringify(defaultProducts));
-    }
-    let currentCat = "전체";
-
-    function syncStorage() { localStorage.setItem("coupang_deal_products", JSON.stringify(products)); }
-    function couponSearchUrl(query) { return "https://www.coupang.com/np/search?q=" + encodeURIComponent(query) + "&channel=recent"; }
-    function openCoupang(query, url) {
-      const target = url && /^https?:\/\//i.test(url) ? url : couponSearchUrl(query);
-      window.open(target, "_blank", "noopener,noreferrer");
-    }
-    document.getElementById("coupangSearchForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      const input = document.getElementById("coupangSearchInput");
-      const query = input.value.trim();
-      if (!query) { input.focus(); return; }
-      openCoupang(query, "");
+  <main class="container">
+    <p class="notice"><strong>구매 안내:</strong> 이 페이지는 상품 가격을 기준으로 장바구니 예상 금액을 계산합니다. 상품은 쿠팡 등 외부 판매처에서 구매하며, 실제 결제·배송비·최종 가격은 판매처에서 확인해 주세요. 현재 사이트 자체 결제는 지원하지 않습니다.</p>
+    <section class="filters" aria-label="상품 필터"><div class="tabs" id="tabs"></div><select id="sort" class="sort" aria-label="상품 정렬"><option value="discount">할인율 높은순</option><option value="low">최저가순</option></select></section>
+    <section class="grid" id="productGrid" aria-live="polite"></section>
+    <section class="admin" id="admin"><h2>상품 추가</h2><form class="admin-form" id="addForm">
+      <select id="newCategory" aria-label="카테고리"><option>음식</option><option>간식</option><option>음료</option><option>디저트</option><option>배달·밀키트</option></select>
+      <input id="newEmoji" placeholder="이모지 또는 이미지 URL" aria-label="이미지"><input id="newName" placeholder="상품명" required aria-label="상품명">
+      <input id="newOrig" type="number" min="1" placeholder="정상가" required aria-label="정상가"><input id="newPrice" type="number" min="1" placeholder="할인가" required aria-label="할인가"><input id="newUrl" type="url" placeholder="판매처 URL (선택)" aria-label="판매처 URL"><button type="submit">추가</button>
+    </form></section>
+  </main>
+  <div class="overlay" id="cartOverlay" role="dialog" aria-modal="true" aria-labelledby="cartTitle"><section class="cart-panel">
+    <div class="cart-head"><h2 id="cartTitle">장바구니</h2><button class="close" id="closeCart" aria-label="장바구니 닫기">×</button></div>
+    <div id="cartItems"></div><div class="totals"><div class="total-line"><span>상품 합계</span><span id="subtotal">0원</span></div><div class="total-line"><strong>예상 결제 금액</strong><strong id="grandTotal">0원</strong></div></div>
+    <button class="checkout" id="checkoutButton">판매처에서 상품 확인하기</button>
+    <p class="cart-note">금액은 페이지에 등록된 상품 가격의 단순 합계이며 배송비·쿠폰·판매처 가격 변동은 포함하지 않습니다. 버튼을 누르면 상품별 판매처 페이지가 새 탭으로 열립니다. 결제는 각 판매처에서 직접 진행해 주세요.</p>
+  </section></div>
+  <footer>이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.<br>표시된 가격은 변동될 수 있으며 최종 구매 조건은 판매처에서 확인해 주세요.</footer>
+<script>
+  const defaultProducts = [
+    {id:1,category:'음식',emoji:'🍜',name:'신라면 20봉 멀티팩 특가',orig:19800,price:12900,url:''},
+    {id:2,category:'음료',emoji:'🥤',name:'코카콜라 제로 355ml 24캔',orig:26900,price:16400,url:''},
+    {id:3,category:'간식',emoji:'🍪',name:'오리온 초코파이 정 36개입 대용량',orig:15000,price:9400,url:''},
+    {id:4,category:'디저트',emoji:'🍰',name:'필라델피아 치즈케이크 큐브 794g',orig:21900,price:14500,url:''},
+    {id:5,category:'배달·밀키트',emoji:'🍗',name:'순살 크리스피 치킨 1kg 에어프라이어용',orig:16900,price:9900,url:''},
+    {id:6,category:'음식',emoji:'🍚',name:'햇반 210g 24개입 실속박스',orig:31000,price:21400,url:''},
+    {id:7,category:'음료',emoji:'☕',name:'카누 미니 다크 로스트 100T',orig:23500,price:15800,url:''},
+    {id:8,category:'간식',emoji:'🍟',name:'프링글스 오리지널 110g 6개 묶음',orig:18000,price:10900,url:''}
+  ];
+  const readArray = (key, fallback) => { try { const value=JSON.parse(localStorage.getItem(key)); return Array.isArray(value)?value:fallback; } catch { return fallback; } };
+  let products = readArray('coupang_deal_products', defaultProducts);
+  let cart = readArray('lowprice_cart', []);
+  let currentCategory = '전체';
+  const money = value => `${Number(value || 0).toLocaleString('ko-KR')}원`;
+  const saveCart = () => localStorage.setItem('lowprice_cart', JSON.stringify(cart));
+  const saveProducts = () => localStorage.setItem('coupang_deal_products', JSON.stringify(products));
+  const searchForm = document.getElementById('searchForm');
+  searchForm.addEventListener('submit', event => { event.preventDefault(); renderProducts(); });
+  document.getElementById('searchInput').addEventListener('input', renderProducts);
+  document.getElementById('sort').addEventListener('change', renderProducts);
+  function searchUrl(name) { return `https://www.coupang.com/np/search?q=${encodeURIComponent(name)}&channel=recent`; }
+  function productUrl(product) { return product.url && /^https?:\/\//i.test(product.url) ? product.url : searchUrl(product.name); }
+  function renderTabs() {
+    const categories=['전체','음식','간식','음료','디저트','배달·밀키트']; const tabs=document.getElementById('tabs'); tabs.replaceChildren();
+    categories.forEach(category => { const button=document.createElement('button'); button.type='button'; button.className=`tab${currentCategory===category?' active':''}`; button.textContent=category; button.addEventListener('click',()=>{currentCategory=category;renderTabs();renderProducts();}); tabs.append(button); });
+  }
+  function renderProducts() {
+    const query=document.getElementById('searchInput').value.trim().toLocaleLowerCase('ko'); const sort=document.getElementById('sort').value;
+    let visible=products.filter(p=>(currentCategory==='전체'||p.category===currentCategory)&&String(p.name).toLocaleLowerCase('ko').includes(query));
+    visible.sort((a,b)=>sort==='low'?Number(a.price)-Number(b.price):(1-Number(b.price)/Number(b.orig))-(1-Number(a.price)/Number(a.orig)));
+    const grid=document.getElementById('productGrid'); grid.replaceChildren();
+    if (!visible.length) { const empty=document.createElement('p'); empty.className='empty'; empty.textContent='조건에 맞는 상품이 없습니다.'; grid.append(empty); return; }
+    visible.forEach(product=>{
+      const card=document.createElement('article'); card.className='card'; const thumb=document.createElement('div'); thumb.className='thumb';
+      if (/^https?:\/\//i.test(product.emoji||'')) { const img=document.createElement('img'); img.src=product.emoji; img.alt=product.name; img.loading='lazy'; thumb.append(img); } else thumb.textContent=product.emoji||'🍽️';
+      const info=document.createElement('div'); info.className='info'; const detail=document.createElement('div'); const category=document.createElement('div'); category.className='cat'; category.textContent=product.category;
+      const name=document.createElement('div'); name.className='title'; name.textContent=product.name; const prices=document.createElement('div'); prices.innerHTML=`<span class="orig">${money(product.orig)}</span><div class="price">${money(product.price)}</div>`;
+      detail.append(category,name,prices); const actions=document.createElement('div'); actions.className='card-actions';
+      const add=document.createElement('button'); add.className='add'; add.type='button'; add.textContent='장바구니 담기'; add.addEventListener('click',()=>addToCart(product.id));
+      const buy=document.createElement('button'); buy.type='button'; buy.textContent='판매처 보기'; buy.addEventListener('click',()=>window.open(productUrl(product),'_blank','noopener,noreferrer'));
+      actions.append(add,buy); info.append(detail,actions); card.append(thumb,info); grid.append(card);
     });
-    function toggleAdmin() { document.getElementById("adminPanel").classList.toggle("open"); renderAdmin(); }
-    function setCat(cat, button) {
-      currentCat = cat;
-      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-      button.classList.add("active");
-      render();
-    }
-    function isImage(value) { return /^https?:\/\//i.test(value) || /^data:image/i.test(value); }
-    function pickRandomMenu() {
-      const candidates = products.filter(product => currentCat === "전체" || product.category === currentCat);
-      const result = document.getElementById("randomMenuResult");
-      if (!candidates.length) { result.textContent = "추천할 메뉴가 없어요."; return; }
-      const selected = candidates[Math.floor(Math.random() * candidates.length)];
-      result.textContent = `${selected.emoji && !isImage(selected.emoji) ? selected.emoji + " " : ""}${selected.name} · ${Number(selected.price).toLocaleString()}원`;
-    }
-    function pickKidsLunch() {
-      const menu = kidsLunchMenus[Math.floor(Math.random() * kidsLunchMenus.length)];
-      const result = document.getElementById("lunchMenuResult");
-      result.replaceChildren();
-      const name = document.createElement("div");
-      name.className = "lunch-menu-name";
-      name.textContent = `🍱 ${menu.name}`;
-      const items = document.createElement("div");
-      items.className = "lunch-menu-items";
-      items.textContent = menu.items;
-      result.append(name, items);
-    }
-    function render() {
-      const query = document.getElementById("coupangSearchInput").value.toLowerCase();
-      const sort = document.getElementById("sortSelect").value;
-      let visible = products.filter(product => (currentCat === "전체" || product.category === currentCat) && String(product.name).toLowerCase().includes(query));
-      visible = visible.sort((a, b) => sort === "low" ? a.price - b.price : (1 - b.price / b.orig) - (1 - a.price / a.orig));
-      document.getElementById("productGrid").innerHTML = visible.map(product => {
-        const discount = product.orig > 0 ? Math.round((1 - product.price / product.orig) * 100) : 0;
-        const thumb = isImage(product.emoji) ? `<img src="${product.emoji}" alt="${product.name}">` : product.emoji;
-        return `<article class="card"><div class="thumb">${thumb}<span class="badge">${discount}%↓</span><span class="rocket">쿠팡 구매</span></div><div class="info"><div><div class="cat">${product.category}</div><div class="title">${product.name}</div><div class="price-box"><span class="orig-price">${Number(product.orig).toLocaleString()}원</span><br><span class="sale-price">${Number(product.price).toLocaleString()}원</span></div></div><button class="buy-btn" type="button" onclick='openCoupang(${JSON.stringify(product.name)}, ${JSON.stringify(product.url || "")})'>쿠팡에서 최저가 보기</button></div></article>`;
-      }).join("");
-    }
-    function addProduct() {
-      const product = { id: Date.now(), category: document.getElementById("newCat").value, emoji: document.getElementById("newEmoji").value || "🍽️", name: document.getElementById("newName").value.trim(), orig: Number(document.getElementById("newOrig").value), price: Number(document.getElementById("newPrice").value), url: document.getElementById("newUrl").value.trim() };
-      if (!product.name || product.orig <= 0 || product.price <= 0) { alert("상품명과 가격을 모두 입력하세요."); return; }
-      products.push(product); syncStorage(); render(); renderAdmin();
-      ["newEmoji", "newName", "newOrig", "newPrice", "newUrl"].forEach(id => document.getElementById(id).value = "");
-    }
-    function renderAdmin() {
-      document.getElementById("adminList").innerHTML = products.map(product => `<div class="admin-row"><label>${product.name}</label><input value="${product.url || ""}" onchange="updateUrl(${product.id}, this.value)" placeholder="쿠팡 상품 또는 검색 링크"><button class="del-btn" type="button" onclick="deleteProduct(${product.id})">삭제</button></div>`).join("");
-    }
-    function updateUrl(id, url) { const product = products.find(item => item.id === id); if (product) { product.url = url.trim(); syncStorage(); } }
-    function deleteProduct(id) { products = products.filter(product => product.id !== id); syncStorage(); render(); renderAdmin(); }
-    function saveLinks() { syncStorage(); toggleAdmin(); }
-    function resetProducts() { products = JSON.parse(JSON.stringify(defaultProducts)); syncStorage(); render(); renderAdmin(); }
-
-    const voiceButton = document.getElementById("voiceButton");
-    const voiceStatus = document.getElementById("voiceStatus");
-    const searchInput = document.getElementById("coupangSearchInput");
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      voiceButton.disabled = true;
-      voiceButton.title = "이 브라우저는 음성인식을 지원하지 않습니다";
-      voiceStatus.textContent = "음성인식은 Chrome 또는 Edge 브라우저에서 사용할 수 있습니다.";
-    } else {
-      const recognition = new SpeechRecognition();
-      recognition.lang = "ko-KR";
-      recognition.interimResults = true;
-      recognition.continuous = false;
-      voiceButton.addEventListener("click", () => {
-        try { recognition.start(); }
-        catch (error) { voiceStatus.textContent = "음성인식이 이미 실행 중입니다."; }
-      });
-      recognition.onstart = () => {
-        voiceButton.classList.add("listening");
-        voiceButton.textContent = "🔴";
-        voiceStatus.textContent = "듣고 있습니다... 말씀해 주세요.";
-      };
-      recognition.onresult = event => {
-        let interim = "";
-        let finalText = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const text = event.results[i][0].transcript;
-          if (event.results[i].isFinal) finalText += text;
-          else interim += text;
-        }
-        searchInput.value = (finalText || interim).trim();
-        render();
-      };
-      recognition.onend = () => {
-        voiceButton.classList.remove("listening");
-        voiceButton.textContent = "🎤";
-        const query = searchInput.value.trim();
-        if (query) { voiceStatus.textContent = `인식 결과: ${query}`; openCoupang(query, ""); }
-        else { voiceStatus.textContent = "음성을 인식하지 못했습니다. 다시 시도해 주세요."; }
-      };
-      recognition.onerror = event => {
-        voiceButton.classList.remove("listening");
-        voiceButton.textContent = "🎤";
-        const messages = {
-          "not-allowed": "마이크 권한이 필요합니다. 브라우저 주소창의 마이크 권한을 허용해 주세요.",
-          "no-speech": "음성이 감지되지 않았습니다. 다시 시도해 주세요.",
-          "audio-capture": "사용 가능한 마이크를 찾을 수 없습니다.",
-          "network": "음성인식 네트워크 오류가 발생했습니다.",
-          "aborted": "음성인식이 취소되었습니다."
-        };
-        voiceStatus.textContent = messages[event.error] || "음성인식 중 오류가 발생했습니다.";
-      };
-    }
-    searchInput.addEventListener("input", render);
-    render();
-  </script>
+  }
+  function addToCart(id) { const line=cart.find(item=>item.id===id); if(line) line.quantity=Math.min(99,Number(line.quantity||1)+1); else cart.push({id,quantity:1}); saveCart(); renderCart(); showToast('장바구니에 담았습니다.'); }
+  function changeQuantity(id, amount) { const line=cart.find(item=>item.id===id); if(!line)return; line.quantity=Math.max(1,Math.min(99,Number(line.quantity)+amount)); saveCart(); renderCart(); }
+  function removeFromCart(id) { cart=cart.filter(item=>item.id!==id); saveCart(); renderCart(); }
+  function renderCart() {
+    cart=cart.filter(line=>products.some(product=>product.id===line.id)); saveCart();
+    const list=document.getElementById('cartItems'); list.replaceChildren(); let count=0,total=0;
+    cart.forEach(line=>{ const product=products.find(item=>item.id===line.id); const quantity=Math.max(1,Number(line.quantity)||1); count+=quantity; total+=Number(product.price)*quantity;
+      const row=document.createElement('div'); row.className='cart-row'; const text=document.createElement('div'); const name=document.createElement('div'); name.className='cart-name'; name.textContent=product.name; const unit=document.createElement('div'); unit.className='cart-unit'; unit.textContent=`${money(product.price)} × ${quantity}개 = ${money(Number(product.price)*quantity)}`; text.append(name,unit);
+      const controls=document.createElement('div'); controls.className='cart-controls'; const minus=document.createElement('button'); minus.type='button'; minus.textContent='−'; minus.setAttribute('aria-label',`${product.name} 수량 줄이기`); minus.addEventListener('click',()=>quantity===1?removeFromCart(line.id):changeQuantity(line.id,-1));
+      const qty=document.createElement('span'); qty.textContent=quantity; const plus=document.createElement('button'); plus.type='button'; plus.textContent='+'; plus.setAttribute('aria-label',`${product.name} 수량 늘리기`); plus.addEventListener('click',()=>changeQuantity(line.id,1));
+      const remove=document.createElement('button'); remove.type='button'; remove.className='remove'; remove.textContent='삭제'; remove.addEventListener('click',()=>removeFromCart(line.id)); controls.append(minus,qty,plus,remove); row.append(text,controls); list.append(row);
+    });
+    if(!cart.length){ const empty=document.createElement('p'); empty.className='empty'; empty.textContent='장바구니가 비어 있습니다.'; list.append(empty); }
+    document.getElementById('cartCount').textContent=count; document.getElementById('subtotal').textContent=money(total); document.getElementById('grandTotal').textContent=money(total); document.getElementById('checkoutButton').disabled=!cart.length;
+  }
+  function showToast(message) { const toast=document.createElement('div'); toast.className='toast'; toast.setAttribute('role','status'); toast.textContent=message; document.body.append(toast); setTimeout(()=>toast.remove(),1800); }
+  const overlay=document.getElementById('cartOverlay'); document.getElementById('openCart').addEventListener('click',()=>{renderCart();overlay.classList.add('open');});
+  document.getElementById('closeCart').addEventListener('click',()=>overlay.classList.remove('open'));
+  overlay.addEventListener('click',event=>{if(event.target===overlay)overlay.classList.remove('open');});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')overlay.classList.remove('open');});
+  document.getElementById('checkoutButton').addEventListener('click',()=>{
+    if(!cart.length)return;
+    const total=cart.reduce((sum,line)=>{const item=products.find(p=>p.id===line.id);return sum+(item?Number(item.price)*Number(line.quantity):0);},0);
+    if(!confirm(`장바구니 상품 예상 합계는 ${money(total)}입니다. 실제 가격과 배송비는 판매처에서 달라질 수 있습니다. 상품별 판매처 페이지를 여시겠습니까?`))return;
+    cart.forEach((line,index)=>{const product=products.find(item=>item.id===line.id); if(product)setTimeout(()=>window.open(productUrl(product),'_blank','noopener,noreferrer'),index*250);});
+  });
+  document.getElementById('addForm').addEventListener('submit',event=>{
+    event.preventDefault(); const product={id:Date.now(),category:document.getElementById('newCategory').value,emoji:document.getElementById('newEmoji').value.trim()||'🍽️',name:document.getElementById('newName').value.trim(),orig:Number(document.getElementById('newOrig').value),price:Number(document.getElementById('newPrice').value),url:document.getElementById('newUrl').value.trim()};
+    if(!product.name||product.orig<=0||product.price<=0){alert('상품명과 가격을 올바르게 입력해 주세요.');return;} products.push(product);saveProducts();event.target.reset();renderTabs();renderProducts();
+  });
+  renderTabs();renderProducts();renderCart();
+</script>
 </body>
 </html>
